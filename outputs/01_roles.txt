@@ -1,0 +1,26 @@
+﻿# 2026-11-05 18:06:30
+PS> docker compose ps
+NAME      IMAGE             STATUS          PORTS
+zk1       zookeeper:3.9.6   Up 24 minutes   0.0.0.0:2181->2181/tcp, [::]:2181->2181/tcp, 0.0.0.0:8081->8081/tcp, [::]:8081->8081/tcp
+zk2       zookeeper:3.9.6   Up 22 minutes   0.0.0.0:2182->2182/tcp, [::]:2182->2182/tcp, 0.0.0.0:8082->8082/tcp, [::]:8082->8082/tcp
+zk3       zookeeper:3.9.6   Up 22 minutes   0.0.0.0:2183->2183/tcp, [::]:2183->2183/tcp, 0.0.0.0:8083->8083/tcp, [::]:8083->8083/tcp
+PS> Get-Content zk\zk1\data\myid, zk\zk2\data\myid, zk\zk3\data\myid
+zk1/data/myid = 1
+zk2/data/myid = 2
+zk3/data/myid = 3
+PS> docker exec zk1 zkServer.sh status
+Using config: /conf/zoo.cfg
+Client port found: 2181. Client address: localhost. Client SSL: false.
+Mode: follower
+PS> docker exec zk2 zkServer.sh status
+Using config: /conf/zoo.cfg
+Client port found: 2182. Client address: localhost. Client SSL: false.
+Mode: leader
+PS> docker exec zk3 zkServer.sh status
+Using config: /conf/zoo.cfg
+Client port found: 2183. Client address: localhost. Client SSL: false.
+Mode: follower
+PS> docker exec zk1 java -version
+openjdk version "17.0.21" 2026-10-20
+OpenJDK Runtime Environment Temurin-17.0.21+9 (build 17.0.21+9)
+OpenJDK 64-Bit Server VM Temurin-17.0.21+9 (build 17.0.21+9, mixed mode, sharing)

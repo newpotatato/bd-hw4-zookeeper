@@ -1,0 +1,33 @@
+﻿PS> Get-Content logs\fencing_scenario.log | Select-String 'ПРИОСТАНОВИЛ|исчез|СТАЛ ЛИДЕРОМ|ВОЗОБНОВИЛ|время смены|dataVersion'
+17:55:54.984 [scenario] ПРИОСТАНОВИЛ лидера A (процессы [24068, 7800], psutil suspend) посреди расчёта: в чекпоинте 5 из 13 задач
+17:56:06.273 [scenario] +11.30 с: узел A исчез из очереди выборов (сервер признал сессию A истёкшей)
+17:56:06.345 [scenario] +11.28 с: B написал «СТАЛ ЛИДЕРОМ» - смена лидера заняла 11.28 с
+17:56:34.978 [scenario] ВОЗОБНОВИЛ A после паузы 40.0 с
+17:56:53.621 [scenario] время смены лидера: узел A удалён через 11.30 с, B стал лидером через 11.28 с после приостановки A (тайм-аут сессии 10 с)
+17:56:53.641 [scenario] указатель /hw4/fencing/result: dataVersion = 1, эпоха 2, записал B, results/hw4/fencing/epoch-2/, совпадает с ДЗ 3: True
+17:56:53.643 [scenario] узел /hw4/fencing/epoch: 2 (dataVersion = 2)
+PS> Select-String 'СТАЛ ЛИДЕРОМ|продолжаю с чекпоинта|СОВПАЛИ|записал результат|ОТКЛОНЕНА' logs\fencing_A.log, logs\fencing_B.log
+fencing_A.log: 17:55:45.786 [A pid=7800] СТАЛ ЛИДЕРОМ
+fencing_A.log: 17:56:53.380 [A pid=7800] контрольные числа и файлы СОВПАЛИ с ДЗ 3; файлы: s3://hh-lake/results/hw4/fencing/epoch-1/
+fencing_A.log: 17:56:53.410 [A pid=7800] публикация ОТКЛОНЕНА: BadVersionError в check(/hw4/fencing/epoch, version=1); сейчас эпоха 2 (версия 2), моя эпоха 1 устарела - указатель не изменён
+fencing_B.log: 17:56:06.262 [B pid=20460] СТАЛ ЛИДЕРОМ
+fencing_B.log: 17:56:06.310 [B pid=20460] продолжаю с чекпоинта: готовы задачи [0, 1, 2, 3, 4] (5 из 13), осталось 8
+fencing_B.log: 17:56:23.905 [B pid=20460] контрольные числа и файлы СОВПАЛИ с ДЗ 3; файлы: s3://hh-lake/results/hw4/fencing/epoch-2/
+fencing_B.log: 17:56:23.928 [B pid=20460] записал результат: эпоха 2, /hw4/fencing/result версия 1 (транзакция check(epoch, version=2) + setData)
+PS> zkCli.sh -server zk1:2181,zk2:2182,zk3:2183 get -s /hw4/fencing/result
+Connecting to zk1:2181,zk2:2182,zk3:2183
+{"epoch": 2, "by": "B", "pid": 20460, "prefix": "results/hw4/fencing/epoch-2/", "sha256": {"skills_k1.csv": "6494D84687724CCA", "pairs_k2.csv": "17F0BC26B0CE33D6", "triples_k3.csv": "DF05762386EF5336"}, "match_hw3": true, "written_at": "2026-11-05T17:56:23.918"}
+cZxid = 0x700000122
+ctime = Thu Nov 05 14:55:45 UTC 2026
+mZxid = 0x700000138
+mtime = Thu Nov 05 14:56:23 UTC 2026
+pZxid = 0x700000122
+cversion = 0
+dataVersion = 1
+aclVersion = 0
+ephemeralOwner = 0x0
+dataLength = 262
+numChildren = 0
+PS> zkCli.sh -server zk1:2181,zk2:2182,zk3:2183 get /hw4/fencing/epoch
+Connecting to zk1:2181,zk2:2182,zk3:2183
+2

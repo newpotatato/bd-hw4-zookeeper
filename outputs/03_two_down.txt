@@ -1,0 +1,22 @@
+﻿# 2026-11-05 17:43:47
+# zk3 уже остановлен; останавливаем zk2, остаётся один zk1
+PS> docker compose stop zk2
+ Container zk2 Stopping 
+ Container zk2 Stopped 
+PS> docker compose ps -a
+NAME      STATUS
+zk1       Up 2 minutes
+zk2       Exited (143) 3 seconds ago
+zk3       Exited (143) 17 seconds ago
+PS> docker exec zk1 zkServer.sh status
+Using config: /conf/zoo.cfg
+Client port found: 2181. Client address: localhost. Client SSL: false.
+Error contacting service. It is probably not running.
+PS> docker exec zk1 sh -c 'echo srvr | nc localhost 2181'
+This ZooKeeper instance is not currently serving requests
+PS> zkCli.sh -server zk1:2181 get /hw4-check
+Connecting to zk1:2181
+2026-11-05 14:43:54,666 [myid:zk1:2181] - WARN  [main-SendThread(zk1:2181):o.a.z.ClientCnxn$SendThread@1301] - Session 0x0 for server zk1/172.21.0.2:2181, Closing socket connection. Attempting reconnect except it is a SessionExpiredException or SessionTimeoutException.
+org.apache.zookeeper.ClientCnxn$EndOfStreamException: Unable to read additional data from server sessionid 0x0, likely server has closed socket
+KeeperErrorCode = ConnectionLoss for /hw4-check
+2026-11-05 14:43:54,779 [myid:] - ERROR [main:o.a.z.u.ServiceUtils@48] - Exiting JVM with code 1

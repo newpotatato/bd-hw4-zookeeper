@@ -1,0 +1,36 @@
+﻿# 2026-11-05 17:43:33
+# лидер ансамбля сейчас zk3 - останавливаем его
+PS> docker compose stop zk3
+ Container zk3 Stopping 
+ Container zk3 Stopped 
+PS> docker compose ps -a
+NAME      STATUS
+zk1       Up 2 minutes
+zk2       Up About a minute
+zk3       Exited (143) 3 seconds ago
+PS> docker exec zk1 zkServer.sh status
+Using config: /conf/zoo.cfg
+Client port found: 2181. Client address: localhost. Client SSL: false.
+Mode: follower
+PS> docker exec zk2 zkServer.sh status
+Using config: /conf/zoo.cfg
+Client port found: 2182. Client address: localhost. Client SSL: false.
+Mode: leader
+# пишем через zk1, читаем через zk2
+PS> zkCli.sh -server zk1:2181 create /hw4-check written-with-2-of-3
+Connecting to zk1:2181
+Created /hw4-check
+PS> zkCli.sh -server zk2:2182 get -s /hw4-check
+Connecting to zk2:2182
+written-with-2-of-3
+cZxid = 0x600000002
+ctime = Thu Nov 05 14:43:41 UTC 2026
+mZxid = 0x600000002
+mtime = Thu Nov 05 14:43:41 UTC 2026
+pZxid = 0x600000002
+cversion = 0
+dataVersion = 0
+aclVersion = 0
+ephemeralOwner = 0x0
+dataLength = 19
+numChildren = 0

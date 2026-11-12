@@ -1,0 +1,38 @@
+# Ансамбль ZooKeeper 3.9.6 из трёх серверов (Java 17 внутри образа).
+# Запуск: docker compose up -d      Роли: docker exec zk1 zkServer.sh status
+name: hw4
+
+x-zk: &zk
+  image: zookeeper:3.9.6
+  # штатная команда запуска сервера; в контейнере - на переднем плане
+  command: ["zkServer.sh", "start-foreground"]
+  restart: "no"
+
+services:
+  zk1:
+    <<: *zk
+    container_name: zk1
+    hostname: zk1
+    environment: {ZOO_DATA_DIR: /data/zk1}
+    ports: ["2181:2181", "8081:8081"]
+    volumes:
+      - ./zk/zk1/zoo.cfg:/conf/zoo.cfg:ro
+      - ./zk/zk1/data:/data/zk1
+  zk2:
+    <<: *zk
+    container_name: zk2
+    hostname: zk2
+    environment: {ZOO_DATA_DIR: /data/zk2}
+    ports: ["2182:2182", "8082:8082"]
+    volumes:
+      - ./zk/zk2/zoo.cfg:/conf/zoo.cfg:ro
+      - ./zk/zk2/data:/data/zk2
+  zk3:
+    <<: *zk
+    container_name: zk3
+    hostname: zk3
+    environment: {ZOO_DATA_DIR: /data/zk3}
+    ports: ["2183:2183", "8083:8083"]
+    volumes:
+      - ./zk/zk3/zoo.cfg:/conf/zoo.cfg:ro
+      - ./zk/zk3/data:/data/zk3

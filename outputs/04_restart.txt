@@ -1,0 +1,29 @@
+﻿# 2026-11-05 17:43:58
+PS> docker compose start zk3 zk2
+ Container zk2 Starting 
+ Container zk3 Starting 
+ Container zk3 Started 
+ Container zk2 Started 
+PS> docker compose ps -a
+NAME      STATUS
+zk1       Up 2 minutes
+zk2       Up 6 seconds
+zk3       Up 6 seconds
+PS> docker exec zk1 zkServer.sh status
+Using config: /conf/zoo.cfg
+Client port found: 2181. Client address: localhost. Client SSL: false.
+Mode: follower
+PS> docker exec zk2 zkServer.sh status
+Using config: /conf/zoo.cfg
+Client port found: 2182. Client address: localhost. Client SSL: false.
+Mode: leader
+PS> docker exec zk3 zkServer.sh status
+Using config: /conf/zoo.cfg
+Client port found: 2183. Client address: localhost. Client SSL: false.
+Mode: follower
+# zk3 был остановлен во время записи /hw4-check - после запуска он получил её от лидера
+PS> zkCli.sh -server zk3:2183 get /hw4-check
+Connecting to zk3:2183
+written-with-2-of-3
+PS> zkCli.sh -server zk1:2181,zk2:2182,zk3:2183 delete /hw4-check
+Connecting to zk1:2181,zk2:2182,zk3:2183

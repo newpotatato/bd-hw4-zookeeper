@@ -1,0 +1,35 @@
+﻿# 17:45:20.660 открываю второе окно с zkCli (scripts/window2_zkcli.cmd)
+# 17:45:22.768 узел /hw4-ephemeral создан из второго окна: data='created-from-window-2', ephemeralOwner=0x2000008bc800001
+PS> zkCli.sh -server zk1:2181,zk2:2182,zk3:2183 get -s /hw4-ephemeral
+Connecting to zk1:2181,zk2:2182,zk3:2183
+created-from-window-2
+cZxid = 0x70000000a
+ctime = Thu Nov 05 14:45:22 UTC 2026
+mZxid = 0x70000000a
+mtime = Thu Nov 05 14:45:22 UTC 2026
+pZxid = 0x70000000a
+cversion = 0
+dataVersion = 0
+aclVersion = 0
+ephemeralOwner = 0x2000008bc800001
+dataLength = 21
+numChildren = 0
+# 17:45:29.135 второе окно закрыто (taskkill /T /F /PID 6716)
+# 17:45:29.140 + 0.0 с: узел ещё есть, ephemeralOwner=0x2000008bc800001
+# 17:45:30.144 + 1.0 с: узел ещё есть, ephemeralOwner=0x2000008bc800001
+# 17:45:31.151 + 2.0 с: узел ещё есть, ephemeralOwner=0x2000008bc800001
+# 17:45:32.161 + 3.0 с: узел ещё есть, ephemeralOwner=0x2000008bc800001
+# 17:45:33.164 + 4.0 с: узел ещё есть, ephemeralOwner=0x2000008bc800001
+# 17:45:34.170 + 5.0 с: узел ещё есть, ephemeralOwner=0x2000008bc800001
+# 17:45:35.175 + 6.0 с: узел ещё есть, ephemeralOwner=0x2000008bc800001
+# 17:45:36.180 + 7.0 с: узел ещё есть, ephemeralOwner=0x2000008bc800001
+# 17:45:37.185 + 8.1 с: узла /hw4-ephemeral больше нет
+# контейнер клиента второго окна: завершён и удалён
+# узел жил после закрытия окна 8.1 с - пока сервер не признал сессию 0x2000008bc800001 истёкшей
+PS> zkCli.sh -server zk1:2181,zk2:2182,zk3:2183 ls /
+Connecting to zk1:2181,zk2:2182,zk3:2183
+[zookeeper]
+PS> zkCli.sh -server zk1:2181,zk2:2182,zk3:2183 stat /hw4-ephemeral
+Connecting to zk1:2181,zk2:2182,zk3:2183
+2026-11-05 14:45:40,840 [myid:] - ERROR [main:o.a.z.u.ServiceUtils@48] - Exiting JVM with code 1
+Node does not exist: /hw4-ephemeral

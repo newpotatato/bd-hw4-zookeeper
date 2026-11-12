@@ -1,0 +1,33 @@
+﻿PS> Get-Content logs\nofence_scenario.log | Select-String 'ПРИОСТАНОВИЛ|исчез|СТАЛ ЛИДЕРОМ|ВОЗОБНОВИЛ|время смены|dataVersion'
+17:54:42.368 [scenario] ПРИОСТАНОВИЛ лидера A (процессы [8780, 12340], psutil suspend) посреди расчёта: в чекпоинте 5 из 13 задач
+17:54:54.276 [scenario] +11.91 с: узел A исчез из очереди выборов (сервер признал сессию A истёкшей)
+17:54:54.361 [scenario] +11.91 с: B написал «СТАЛ ЛИДЕРОМ» - смена лидера заняла 11.91 с
+17:55:22.362 [scenario] ВОЗОБНОВИЛ A после паузы 40.0 с
+17:55:39.995 [scenario] время смены лидера: узел A удалён через 11.91 с, B стал лидером через 11.91 с после приостановки A (тайм-аут сессии 10 с)
+17:55:40.016 [scenario] указатель /hw4/nofence/result: dataVersion = 2, эпоха 1, записал A, results/hw4/nofence/epoch-1/, совпадает с ДЗ 3: True
+17:55:40.019 [scenario] узел /hw4/nofence/epoch: 2 (dataVersion = 2)
+PS> Select-String 'СТАЛ ЛИДЕРОМ|продолжаю с чекпоинта|СОВПАЛИ|записал результат|ОТКЛОНЕНА' logs\nofence_A.log, logs\nofence_B.log
+nofence_A.log: 17:54:33.477 [A pid=12340] СТАЛ ЛИДЕРОМ
+nofence_A.log: 17:55:39.780 [A pid=12340] контрольные числа и файлы СОВПАЛИ с ДЗ 3; файлы: s3://hh-lake/results/hw4/nofence/epoch-1/
+nofence_A.log: 17:55:39.803 [A pid=12340] записал результат: эпоха 1, /hw4/nofence/result версия 2 (без проверки эпохи)
+nofence_B.log: 17:54:54.271 [B pid=10600] СТАЛ ЛИДЕРОМ
+nofence_B.log: 17:54:54.297 [B pid=10600] продолжаю с чекпоинта: готовы задачи [0, 1, 2, 3, 4] (5 из 13), осталось 8
+nofence_B.log: 17:55:11.670 [B pid=10600] контрольные числа и файлы СОВПАЛИ с ДЗ 3; файлы: s3://hh-lake/results/hw4/nofence/epoch-2/
+nofence_B.log: 17:55:11.693 [B pid=10600] записал результат: эпоха 2, /hw4/nofence/result версия 1 (без проверки эпохи)
+PS> zkCli.sh -server zk1:2181,zk2:2182,zk3:2183 get -s /hw4/nofence/result
+Connecting to zk1:2181,zk2:2182,zk3:2183
+{"epoch": 1, "by": "A", "pid": 12340, "prefix": "results/hw4/nofence/epoch-1/", "sha256": {"skills_k1.csv": "6494D84687724CCA", "pairs_k2.csv": "17F0BC26B0CE33D6", "triples_k3.csv": "DF05762386EF5336"}, "match_hw3": true, "written_at": "2026-11-05T17:55:39.795"}
+cZxid = 0x7000000f6
+ctime = Thu Nov 05 14:54:33 UTC 2026
+mZxid = 0x700000118
+mtime = Thu Nov 05 14:55:39 UTC 2026
+pZxid = 0x7000000f6
+cversion = 0
+dataVersion = 2
+aclVersion = 0
+ephemeralOwner = 0x0
+dataLength = 262
+numChildren = 0
+PS> zkCli.sh -server zk1:2181,zk2:2182,zk3:2183 get /hw4/nofence/epoch
+Connecting to zk1:2181,zk2:2182,zk3:2183
+2
